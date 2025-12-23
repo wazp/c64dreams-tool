@@ -16,17 +16,18 @@ type TargetProfile struct {
 	MaxNameLen     int
 	DisplayNameLen int
 	Notes          string
+	ForceLowercase bool
 }
 
 // ProfileFor returns the constraints for a target device.
 func ProfileFor(target TargetDevice) TargetProfile {
 	switch target {
 	case TargetSD2IEC:
-		return TargetProfile{Target: TargetSD2IEC, MaxNameLen: 16, Notes: "Commodore DOS filename length"}
+		return TargetProfile{Target: TargetSD2IEC, MaxNameLen: 16, Notes: "Commodore DOS filename length", ForceLowercase: true}
 	case TargetPi1541:
-		return TargetProfile{Target: TargetPi1541, MaxNameLen: 16, Notes: "Behaves like 1541/Commodore DOS"}
+		return TargetProfile{Target: TargetPi1541, MaxNameLen: 16, Notes: "Behaves like 1541/Commodore DOS", ForceLowercase: true}
 	case TargetKungFuFlash:
-		return TargetProfile{Target: TargetKungFuFlash, MaxNameLen: 255, DisplayNameLen: 32, Notes: "Menu display truncates around 32 chars"}
+		return TargetProfile{Target: TargetKungFuFlash, MaxNameLen: 255, DisplayNameLen: 32, Notes: "Menu display truncates around 32 chars", ForceLowercase: true}
 	case TargetUltimate:
 		return TargetProfile{Target: TargetUltimate, MaxNameLen: 255, Notes: "Filesystem long filename typical maximum"}
 	default:

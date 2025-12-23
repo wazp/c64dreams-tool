@@ -67,10 +67,10 @@ func TestNormalizeGameCollisionFlagging(t *testing.T) {
 	if !games[0].Variants[0].Label.Collision || !games[0].Variants[1].Label.Collision {
 		t.Fatalf("expected both variants to be marked as collisions")
 	}
-	if games[0].Variants[0].Label.Normalized != "Disk" {
+	if games[0].Variants[0].Label.Normalized != "disk" {
 		t.Fatalf("expected first variant unchanged, got %s", games[0].Variants[0].Label.Normalized)
 	}
-	if games[0].Variants[1].Label.Normalized != "Disk~1" {
+	if games[0].Variants[1].Label.Normalized != "disk~1" {
 		t.Fatalf("expected second variant suffixed, got %s", games[0].Variants[1].Label.Normalized)
 	}
 }
@@ -141,9 +141,9 @@ func TestCollisionResolutionAcrossTargets(t *testing.T) {
 			opts:   Options{Target: model.TargetSD2IEC},
 			titles: []string{"Impossible Mission II", "Impossible Mission III", "Impossible Mission IV"},
 			expected: []string{
-				"Impossible Missi",
-				"Impossible Mis~1",
-				"Impossible Mis~2",
+				"impossible missi",
+				"impossible mis~1",
+				"impossible mis~2",
 			},
 		},
 		{
@@ -151,9 +151,9 @@ func TestCollisionResolutionAcrossTargets(t *testing.T) {
 			opts:   Options{Target: model.TargetSD2IEC, MaxNameLen: 8},
 			titles: []string{"Impossible Mission II", "Impossible Mission III", "Impossible Mission IV"},
 			expected: []string{
-				"Impossib",
-				"Imposs~1",
-				"Imposs~2",
+				"impossib",
+				"imposs~1",
+				"imposs~2",
 			},
 		},
 		{

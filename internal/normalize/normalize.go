@@ -29,6 +29,8 @@ var romanNumerals = map[string]string{
 
 // NormalizeGame converts a Game into a NormalizedGame using simple, deterministic rules.
 func NormalizeGame(game model.Game, opts Options) (model.NormalizedGame, error) {
+	profile := model.ProfileFor(opts.Target)
+
 	ng := model.NormalizedGame{
 		ID:     game.ID,
 		Title:  game.Title,
@@ -37,6 +39,9 @@ func NormalizeGame(game model.Game, opts Options) (model.NormalizedGame, error) 
 	}
 
 	ng.Name = normalizeName(game.Title, opts.EffectiveMaxLen())
+	if profile.ForceLowercase {
+		ng.Name.Normalized = strings.ToLower(ng.Name.Normalized)
+	}
 
 	for _, v := range game.Variants {
 		varRegion := v.Region
@@ -50,6 +55,9 @@ func NormalizeGame(game model.Game, opts Options) (model.NormalizedGame, error) 
 			PreferredTarget: v.PreferredTarget,
 			ContentType:     v.ContentType,
 			Notes:           v.Notes,
+		}
+		if profile.ForceLowercase {
+			nv.Label.Normalized = strings.ToLower(nv.Label.Normalized)
 		}
 		ng.Variants = append(ng.Variants, nv)
 	}
