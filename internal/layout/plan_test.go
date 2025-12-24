@@ -92,6 +92,16 @@ func TestPlanStability(t *testing.T) {
 	})
 }
 
+func TestPlanNumericBucket(t *testing.T) {
+	game := sampleGame("g1", "1942", "Disk1", model.ContentDisk)
+	planned, err := Plan([]model.NormalizedGame{game}, Options{BaseDir: "games", GroupByAlpha: true})
+	if err != nil {
+		t.Fatalf("Plan returned error: %v", err)
+	}
+
+	expectPath(t, planned, []string{"games/1/1942/disk1.d64"})
+}
+
 func sampleGame(id, name, label string, ct model.ContentType) model.NormalizedGame {
 	return model.NormalizedGame{
 		ID:     id,

@@ -1,9 +1,6 @@
 package layout
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 // MediaGroupFor maps a file extension to a canonical media group.
 func MediaGroupFor(ext string) (string, error) {
@@ -18,6 +15,6 @@ func MediaGroupFor(ext string) (string, error) {
 	case "crt":
 		return "cart", nil
 	default:
-		return "", fmt.Errorf("unknown media extension: %s", ext)
+		return "unknown", nil
 	}
 }

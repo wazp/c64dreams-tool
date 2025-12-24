@@ -19,6 +19,7 @@ const (
 	ContentTape    ContentType = "tape"
 	ContentPrg     ContentType = "prg"
 	ContentZip     ContentType = "zip"
+	ContentCart    ContentType = "cart"
 )
 
 // Game represents a single C64 title and its playable variants.
@@ -56,6 +57,7 @@ type NormalizedVariant struct {
 	Region          Region
 	PreferredTarget TargetDevice
 	ContentType     ContentType
+	SourcePath      string
 	Notes           string
 }
 

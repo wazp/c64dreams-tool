@@ -35,7 +35,7 @@ func newRootCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:           "c64dreams",
+		Use:           "c64dreams-tool",
 		Short:         "C64 Dreams tooling CLI",
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -58,6 +58,7 @@ func newRootCmd() *cobra.Command {
 	cmd.AddCommand(newNormalizeCmd(opts))
 	cmd.AddCommand(newScanCmd(opts))
 	cmd.AddCommand(newIngestCmd(opts))
+	cmd.AddCommand(newBuildCmd(opts))
 
 	return cmd
 }

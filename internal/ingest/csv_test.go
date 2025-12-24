@@ -44,7 +44,7 @@ func TestLoadCSV(t *testing.T) {
 	if variant.ContentType != model.ContentDisk {
 		t.Fatalf("unexpected content type: %s", variant.ContentType)
 	}
-	if variant.SourcePath != "PRG1" {
+	if variant.SourcePath != "PRG1.d64" {
 		t.Fatalf("unexpected source path: %s", variant.SourcePath)
 	}
 	if variant.Notes != "Note one | Retro note | Custom note | CSDb" {
@@ -55,7 +55,7 @@ func TestLoadCSV(t *testing.T) {
 	if second.Variants[0].ContentType != model.ContentPrg {
 		t.Fatalf("unexpected second content type: %s", second.Variants[0].ContentType)
 	}
-	if second.Variants[0].SourcePath != "Second Game" { // falls back to title when PRG name is n/a
+	if second.Variants[0].SourcePath != "Second Game.prg" { // falls back to title when PRG name is n/a
 		t.Fatalf("unexpected fallback source path: %s", second.Variants[0].SourcePath)
 	}
 }

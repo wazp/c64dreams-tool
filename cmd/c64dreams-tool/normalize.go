@@ -1,9 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/wazp/c64dreams-tool/internal/ingest"
+	"github.com/wazp/c64dreams-tool/internal/normalize"
+	"github.com/wazp/c64dreams-tool/pkg/model"
 )
 
 func newNormalizeCmd(opts *options) *cobra.Command {
@@ -15,31 +20,43 @@ func newNormalizeCmd(opts *options) *cobra.Command {
 				return err
 			}
 
-			if opts.input == "" {
-				return fmt.Errorf("--input is required")
-			}
-
-			if opts.output == "" {
-				return fmt.Errorf("--output is required")
-			}
-
 			if opts.sheet == "" {
 				return fmt.Errorf("--sheet is required")
 			}
 
-			fmt.Fprintf(
-				cmd.OutOrStdout(),
-				"normalize target=%s region=%s group-by=%s max-name-len=%d dry-run=%v json=%v input=%s output=%s sheet=%s\n",
-				string(opts.target),
-				opts.region,
-				opts.groupBy,
-				opts.maxNameLen,
-				opts.dryRun,
-				opts.json,
-				opts.input,
-				opts.output,
-				opts.sheet,
-			)
+			games, err := ingest.LoadCSV(cmd.Context(), opts.sheet)
+			if err != nil {
+				return err
+			}
+
+			normOpts := normalize.Options{Target: opts.target, MaxNameLen: opts.maxNameLen}
+			var normalized []model.NormalizedGame
+			for _, g := range games {
+				ng, err := normalize.NormalizeGame(g, normOpts)
+				if err != nil {
+					return err
+				}
+				normalized = append(normalized, ng)
+			}
+			normalized = normalize.ResolveCollisions(normalized, normOpts)
+
+			if opts.json {
+				payload := struct {
+					Games []model.NormalizedGame `json:"games"`
+				}{Games: normalized}
+				enc := json.NewEncoder(cmd.OutOrStdout())
+				enc.SetIndent("", "  ")
+				return enc.Encode(payload)
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), "Normalized %d games (target=%s max-len=%d)\n", len(normalized), opts.target, normOpts.EffectiveMaxLen())
+			for i, ng := range normalized {
+				if i >= 5 {
+					fmt.Fprintf(cmd.OutOrStdout(), "... (%d more)\n", len(normalized)-i)
+					break
+				}
+				fmt.Fprintf(cmd.OutOrStdout(), "- %s -> %s\n", ng.Title, ng.Name.Normalized)
+			}
 
 			return nil
 		},

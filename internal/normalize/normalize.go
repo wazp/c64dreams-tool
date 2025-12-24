@@ -54,6 +54,7 @@ func NormalizeGame(game model.Game, opts Options) (model.NormalizedGame, error) 
 			Region:          varRegion,
 			PreferredTarget: v.PreferredTarget,
 			ContentType:     v.ContentType,
+			SourcePath:      v.SourcePath,
 			Notes:           v.Notes,
 		}
 		if profile.ForceLowercase {
@@ -66,7 +67,7 @@ func NormalizeGame(game model.Game, opts Options) (model.NormalizedGame, error) 
 }
 
 func normalizeName(value string, maxLen int) model.NormalizedName {
-	name := strings.TrimSpace(value)
+	name := strings.ReplaceAll(strings.TrimSpace(value), "'", "")
 	name = punctuationRegexp.ReplaceAllString(name, " ")
 	name = strings.Join(strings.Fields(name), " ")
 

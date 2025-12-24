@@ -68,12 +68,15 @@ func LoadCSV(ctx context.Context, path string) ([]model.Game, error) {
 
 		notes := joinNonEmpty(" | ", gameNotes, retroarchNotes, customNotes, source)
 
+		ct := mapContentType(content)
+		sourcePath := chooseSourcePath(prgName, title, ct)
+
 		variant := model.Variant{
 			Label:           chooseLabel(version, content),
 			Region:          model.RegionBoth,
 			PreferredTarget: model.TargetUltimate,
-			ContentType:     mapContentType(content),
-			SourcePath:      chooseSourcePath(prgName, title),
+			ContentType:     ct,
+			SourcePath:      sourcePath,
 			Notes:           notes,
 		}
 
@@ -148,11 +151,40 @@ func chooseLabel(version, content string) string {
 	return "Variant"
 }
 
-func chooseSourcePath(prgName, title string) string {
-	if prgName != "" && !strings.EqualFold(prgName, "n/a") {
-		return prgName
+func chooseSourcePath(prgName, title string, ct model.ContentType) string {
+	name := title
+	cleanPRG := strings.TrimSpace(prgName)
+	if cleanPRG != "" && !strings.EqualFold(cleanPRG, "n/a") && !strings.ContainsAny(cleanPRG, " \\//") {
+		name = cleanPRG
 	}
-	return title
+
+	ext := extensionForContent(ct)
+	if strings.HasSuffix(strings.ToLower(name), "."+ext) {
+		return name
+	}
+
+	if ext != "" {
+		return name + "." + ext
+	}
+
+	return name
+}
+
+func extensionForContent(ct model.ContentType) string {
+	switch ct {
+	case model.ContentDisk:
+		return "d64"
+	case model.ContentTape:
+		return "tap"
+	case model.ContentCart:
+		return "crt"
+	case model.ContentPrg:
+		return "prg"
+	case model.ContentZip:
+		return "zip"
+	default:
+		return ""
+	}
 }
 
 func mapContentType(content string) model.ContentType {
@@ -163,10 +195,10 @@ func mapContentType(content string) model.ContentType {
 		return model.ContentTape
 	case "prg":
 		return model.ContentPrg
+	case "crt", "ef", "easyflash":
+		return model.ContentCart
 	case "zip":
 		return model.ContentZip
-	case "crt", "ef", "easyflash":
-		return model.ContentUnknown
 	default:
 		return model.ContentUnknown
 	}
